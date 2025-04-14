@@ -35,16 +35,19 @@ RUN docker-php-ext-configure intl && docker-php-ext-install intl
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Install Filament via Composer
+RUN composer require filament/filament:"^3.3" -W
+
 # Install Node.js (using NodeSource)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs
 
 # Copy package.json and lock first to cache npm install
 COPY package*.json ./
 
-# Install frontend dependencies
+# Install frontend dependencies (npm install)
 RUN npm install
 
-# Copy rest of the application
+# Copy the rest of the application
 COPY . .
 
 # Build frontend assets (Vite)
@@ -54,7 +57,7 @@ RUN npm run build
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage
 
-# Install composer dependencies
+# Install composer dependencies (after Filament install)
 RUN composer install --no-dev --optimize-autoloader
 
 # Expose port and run Laravel server
