@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Compact stats widget */
+.compact-stat .fi-stats-overview-stat {
+    padding: 0.5rem !important;
+}
+
+.compact-stat .fi-stat-value {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.compact-stat .fi-stat-label {
+    font-size: 0.875rem !important;
+    margin-top: 0.25rem !important;
+}
+
+.compact-stat .filament-widgets-chart-widget {
+    min-height: 100px !important;
+}
