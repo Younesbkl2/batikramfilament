@@ -43,6 +43,11 @@ RUN chown -R www-data:www-data /var/www \
     && chmod -R 755 /var/www/storage
 
 # Install PHP dependencies
+RUN apt-get update && apt-get install -y libicu-dev && \
+    docker-php-ext-configure intl && \
+    docker-php-ext-install intl
+
+# Install composer dependencies
 RUN composer install --no-dev --optimize-autoloader
 
 # Expose port 8000 and start Laravel server
