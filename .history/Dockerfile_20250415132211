@@ -18,9 +18,8 @@ RUN pecl install redis && docker-php-ext-enable redis && \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy app and config files
+# Copy app
 COPY . .
-COPY ./nginx.conf /tmp/nginx.template  # MOVED THIS LINE UP
 
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader && \
@@ -44,14 +43,14 @@ USER www-data
 RUN php artisan filament:assets
 USER root
 
-# Nginx configuration - FIXED ORDER
+# Nginx configuration
 RUN rm -f /etc/nginx/sites-enabled/default && \
     mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled && \
-    mv /tmp/nginx.template /etc/nginx/sites-available/laravel.template && \
-    ln -s /etc/nginx/sites-available/laravel.template /etc/nginx/sites-enabled/laravel
+    mv /tmp/nginx.template /etc/nginx/sites-available/laravel.template
 
 # Supervisor and startup
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./nginx.conf /tmp/nginx.template
 COPY ./startup.sh /usr/local/bin/startup.sh
 RUN chmod +x /usr/local/bin/startup.sh
 
