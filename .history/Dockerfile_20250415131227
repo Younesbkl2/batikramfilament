@@ -30,6 +30,7 @@ RUN mkdir -p storage/app/public && \
     chown -R www-data:www-data /var/www && \
     chmod -R 775 storage bootstrap/cache
 
+
 # Filament assets (run as www-data)
 USER www-data
 RUN php artisan filament:assets
