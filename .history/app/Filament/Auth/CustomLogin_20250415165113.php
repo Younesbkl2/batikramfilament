@@ -55,8 +55,8 @@ class CustomLogin extends Login
         ]);
     }
 
-    // Override the login method instead of authenticate
-    protected function login(Request $request)
+    // Ensure method signature matches the parent class
+    protected function authenticate(Request $request)
     {
         $request->validate([
             'data.login' => ['required'],

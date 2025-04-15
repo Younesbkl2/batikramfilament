@@ -6,7 +6,6 @@ use Filament\Pages\Auth\Login;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Checkbox;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Filament\Http\Responses\Auth\LoginResponse;
 use Illuminate\Http\Request;
@@ -55,8 +54,7 @@ class CustomLogin extends Login
         ]);
     }
 
-    // Override the login method instead of authenticate
-    protected function login(Request $request)
+    public function authenticate(Request $request): LoginResponse
     {
         $request->validate([
             'data.login' => ['required'],
@@ -65,14 +63,12 @@ class CustomLogin extends Login
 
         $credentials = $this->getCredentialsFromFormData($request->input('data'));
 
-        // Use the Auth facade properly to attempt login
-        if (! Auth::attempt($credentials, $request->boolean('data.remember'))) {
+        if (! auth()->attempt($credentials, $request->boolean('data.remember'))) {
             $this->throwFailureValidationException();
         }
 
         session()->regenerate();
 
-        // Return the login response
         return app(LoginResponse::class);
     }
 }
