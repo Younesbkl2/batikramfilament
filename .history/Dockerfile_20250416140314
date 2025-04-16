@@ -12,10 +12,9 @@ RUN apt-get update && apt-get install -y \
     mariadb-client nodejs npm gettext-base iproute2 net-tools
 
 # Install PHP extensions
-# Add redis extension properly
-RUN pecl install redis && \
-    docker-php-ext-enable redis && \
-    docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip intl
+RUN pecl install redis && docker-php-ext-enable redis && \
+    docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd zip && \
+    docker-php-ext-configure intl && docker-php-ext-install intl
 
 # Configure PHP-FPM
 RUN mkdir -p /var/run && \
