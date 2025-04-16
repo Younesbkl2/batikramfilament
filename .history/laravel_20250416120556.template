@@ -1,0 +1,85 @@
+server {
+    listen ${PORT};
+    server_name _;
+    root /var/www/public;
+    index index.php index.html;
+
+    # Handle storage files
+    location /storage {
+        alias /var/www/storage/app/public;
+        try_files $uri $uri/ =404;
+        expires max;
+        access_log off;
+        add_header Cache-Control "public";
+    }
+
+    # Handle Filament assets
+    location /vendor/filament/ {
+        alias /var/www/vendor/filament/;
+        try_files $uri =404;
+        expires 1y;
+        access_log off;
+        add_header Cache-Control "public";
+    }
+
+    # Main Laravel front controller
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    location /livewire {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # PHP-FPM configuration
+    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass unix:/var/run/php-fpm.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        
+        fastcgi_read_timeout 300;
+        fastcgi_buffers 16 16k; 
+        fastcgi_buffer_size 32k;
+    }
+
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, no-transform";
+        log_not_found off;
+        access_log off;
+    }
+
+    # Security
+    location ~ /\.(env|git|svn|ht|idea) {
+        deny all;
+        return 403;
+    }
+
+    location ~* ^/(storage|bootstrap)/.*\.php$ {
+        deny all;
+        return 403;
+    }
+
+    # Favicon
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+    }
+
+    # Robots.txt
+    location = /robots.txt {
+        log_not_found off;
+        access_log off;
+    }
+
+    # Health check
+    location = /health {
+        access_log off;
+        add_header Content-Type text/plain;
+        return 200 "OK";
+    }
+}
