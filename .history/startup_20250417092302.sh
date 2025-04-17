@@ -12,10 +12,6 @@ chown -R www-data:www-data /var/www/storage
 # Apply PORT to Nginx config
 envsubst '$PORT' < /etc/nginx/sites-available/laravel.template > /etc/nginx/sites-available/laravel
 
-# After applying envsubst
-echo "Final Nginx configuration:"
-cat /etc/nginx/sites-available/laravel
-
 # Create symlink for Nginx config
 ln -sf /etc/nginx/sites-available/laravel /etc/nginx/sites-enabled/
 
@@ -48,7 +44,3 @@ ss -tulpn | grep ":${PORT}" || true
 
 # Keep Nginx running in foreground
 nginx -g "daemon off;"
-
-# After starting Nginx
-echo "Nginx error log:"
-tail -n 20 /var/log/nginx/error.log
